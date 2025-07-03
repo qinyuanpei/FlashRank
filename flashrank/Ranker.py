@@ -50,22 +50,23 @@ class Ranker:
 
         self.cache_dir: Path = Path(cache_dir)
         self.model_dir: Path = self.cache_dir / model_name
-        self._prepare_model_dir(model_name)
         model_file = model_file_map[model_name]
+        self.model_path = self.model_dir / model_file
+        self._prepare_model_dir(model_name)
 
         self.llm_model = None
         if model_name in listwise_rankers:
             try:
                 from llama_cpp import Llama
                 self.llm_model = Llama(
-                model_path=str(self.model_dir / model_file),
+                model_path=str(self.model_path),
                 n_ctx=max_length,  
                 n_threads=8,          
                 ) 
             except ImportError:
                 raise ImportError("Please install it using 'pip install flashrank[listwise]' to run LLM based listwise rerankers.")    
         else:
-            self.session = ort.InferenceSession(str(self.model_dir / model_file))
+            self.session = ort.InferenceSession(str(self.model_path))
             self.tokenizer: Tokenizer = self._get_tokenizer(max_length)
 
     def _prepare_model_dir(self, model_name: str):
@@ -78,7 +79,7 @@ class Ranker:
             self.logger.debug(f"Cache directory {self.cache_dir} not found. Creating it..")
             self.cache_dir.mkdir(parents=True, exist_ok=True)
         
-        if not self.model_dir.exists():
+        if not self.model_path.exists():
             self.logger.info(f"Downloading {model_name}...")
             self._download_model_files(model_name)
 
