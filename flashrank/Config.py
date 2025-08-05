@@ -1,8 +1,8 @@
 # Moved to HF - My cloud bucket and $ wont be abused anymore :-)
 # THE HF Repo is UNDER CC-BY-SA LICENSE. USE APPROPRIATELY.
 import os
-hf_endpoint = os.environ.get('HF_ENDPOINT', default='https://huggingface.co')
-model_url = hf_endpoint.rstrip("/") + '/prithivida/flashrank/resolve/main/{}.zip'
+hf_endpoint = os.environ.get('HF_ENDPOINT', default='https://huggingface.co').rstrip("/")
+model_url = f'{hf_endpoint}/prithivida/flashrank/resolve/main/{{}}.zip'
 listwise_rankers = {'rank_zephyr_7b_v1_full'}
 
 default_cache_dir = "/tmp"
